@@ -1,32 +1,36 @@
-# This is just an example to get you started. A typical binary package
-# uses this file as the main entry point of the application.
 import termstyle
 import std/[os, rdstdin]
 
+var projectPath*: string
+
+# Setup config
 proc setupAutomataDir(path: string) = 
   discard existsOrCreateDir(path / ".automata")
   let config = open(path / ".automata" / "config.automata", fmWrite)
   defer: config.close()
 
-  config.writeLine("mainPath = " & "src/main/java/" & readLineFromStdin(yellow bold "Main package path (typically smth like \"com/qinomed/mycoolmod\"): \n> "))
+  config.writeLine("mainPath = " & "src/main/java/" & readLineFromStdin(yellow bold "Main package path (Example: \"com/qinomed/mycoolmod\"): \n> "))
+  config.writeLine("itemRegistry = " & "src/main/java/" & readLineFromStdin(yellow bold "Item registry class (Example: \"item/ModItems\"): \n> "))
 
   echo green "Setup complete!"
   
 
-proc openProject(path: string) = 
+proc openProject() = 
   echo "Loading project..."
-  if not dirExists(path):
+  if not dirExists(projectPath):
     echo red "Path does not exist!"
     quit(1)
   
-  if not dirExists(path / "src"):
+  if not dirExists(projectPath / "src"):
     echo red "Invalid project!"
     quit(1)
   
-  if not fileExists(path / ".automata" / "config.automata"):
+  if not fileExists(projectPath / ".automata" / "config.automata"):
     echo "Automata config not found, starting setup..."
-    setupAutomataDir(path)
+    setupAutomataDir(projectPath)
 
+
+# Main
 when isMainModule:
   let paramCount = paramCount()
 
@@ -44,4 +48,5 @@ when isMainModule:
       if paramCount < 2:
         echo red "No path provided!"
         quit(1)
-      openProject(args[1].normalizePathEnd())
+      projectPath = args[1].normalizePathEnd()
+      openProject()
