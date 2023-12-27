@@ -1,7 +1,7 @@
 import termstyle
-import std/[os, rdstdin]
-
-var projectPath*: string
+import automata_shell
+import config
+import std/[os]
 
 # Setup config
 proc setupAutomataDir(path: string) = 
@@ -9,8 +9,8 @@ proc setupAutomataDir(path: string) =
   let config = open(path / ".automata" / "config.automata", fmWrite)
   defer: config.close()
 
-  config.writeLine("mainPath = " & "src/main/java/" & readLineFromStdin(yellow bold "Main package path (Example: \"com/qinomed/mycoolmod\"): \n> "))
-  config.writeLine("itemRegistry = " & "src/main/java/" & readLineFromStdin(yellow bold "Item registry class (Example: \"item/ModItems\"): \n> "))
+  config.writeToConfig("mainPath", "src/main/java/", yellow bold "Main package path (Example: \"com/qinomed/mycoolmod\"): \n> ")
+  config.writeToConfig("itemRegistry", "src/main/java/", yellow bold "Item registry class (Example: \"item/ModItems\"): \n> ")
 
   echo green "Setup complete!"
   
@@ -28,6 +28,8 @@ proc openProject() =
   if not fileExists(projectPath / ".automata" / "config.automata"):
     echo "Automata config not found, starting setup..."
     setupAutomataDir(projectPath)
+  
+  startShell()
 
 
 # Main
@@ -49,4 +51,5 @@ when isMainModule:
         echo red "No path provided!"
         quit(1)
       projectPath = args[1].normalizePathEnd()
+      projectName = tailDir(projectPath)
       openProject()
