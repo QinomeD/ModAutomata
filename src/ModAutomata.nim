@@ -10,7 +10,7 @@ proc setupAutomataDir(path: string) =
   defer: config.close()
 
   config.writeToConfig("mainPath", "src/main/java/", yellow bold "Main package path (Example: \"com/qinomed/mycoolmod\"): \n> ")
-  config.writeToConfig("itemRegistry", "src/main/java/", yellow bold "Item registry class (Example: \"item/ModItems\"): \n> ")
+  config.writeToConfig("itemRegistry", mainPath, yellow bold "Item registry class (Example: \"item/ModItems\"): \n> ")
 
   echo green "Setup complete!"
   
